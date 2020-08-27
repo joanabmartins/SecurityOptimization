@@ -2,52 +2,48 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "adminUsername": {
+    "SecurityCenterStd": {
       "type": "string",
-      "metadata": {
-        "description": "Username for the Virtual Machine."
-      }
-    },
-    "adminPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Password for the Virtual Machine."
-      }
-    },
-    "dnsLabelPrefix": {
-      "type": "string",
-      "metadata": {
-        "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
-      }
-    },
-    "windowsOSVersion": {
-      "type": "string",
-      "defaultValue": "2016-Datacenter",
       "allowedValues": [
-        "2008-R2-SP1",
-        "2012-Datacenter",
-        "2012-R2-Datacenter",
-        "2016-Nano-Server",
-        "2016-Datacenter-with-Containers",
-        "2016-Datacenter",
-        "2019-Datacenter"
+      "Yes",
+        "No"
+    ],
+      "defaultValue": "Yes",
+      "metadata": {
+        "description": "Do you want to enable Security Center Standard?"
+      }
+    },
+    "Sentinel": {
+      "type": "string",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "defaultValue": "Yes",
+      "metadata": {
+        "description": "Do you want to deploy Azure Sentinel?"
+      }
+    },
+    "AssignPolicies": {
+      "type": "string",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "defaultValue": "Yes",
+      "metadata": {
+        "description": "Do you want to assign policies that will enable automatically log collection of key vault, app gw, nsg, and azure firewall?"
+      }
+    },
+    "Workbook": {
+      "type": "string",
+      "defaultValue": "Yes",
+      "allowedValues": [
+        "Yes",
+        "No"
       ],
       "metadata": {
-        "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
-      }
-    },
-    "vmSize": {
-      "type": "string",
-      "defaultValue": "Standard_D2_v3",
-      "metadata": {
-        "description": "Size of the virtual machine."
-      }
-    },
-    "location": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().location]",
-      "metadata": {
-        "description": "Location for all resources."
+        "description": "Do you want to deploy our workbook?"
       }
     }
   },
