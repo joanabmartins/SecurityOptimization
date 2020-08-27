@@ -2,7 +2,7 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "SecurityCenterStd": {
+    "DeploySecurityCenterStandard": {
       "type": "string",
       "allowedValues": [
       "Yes",
@@ -13,7 +13,7 @@
         "description": "Do you want to enable Security Center Standard?"
       }
     },
-    "Sentinel": {
+    "DeploySentinel": {
       "type": "string",
       "allowedValues": [
         "Yes",
@@ -35,7 +35,7 @@
         "description": "Do you want to assign policies that will enable automatically log collection of key vault, app gw, nsg, and azure firewall?"
       }
     },
-    "Workbook": {
+    "DeployWorkbook": {
       "type": "string",
       "defaultValue": "Yes",
       "allowedValues": [
