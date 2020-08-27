@@ -45,6 +45,12 @@
       "metadata": {
         "description": "Do you want to deploy our workbook?"
       }
+    },
+    "LogAnalyticsWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name for the new or existing log analytics workspace where you want to send ASC and diagnostic logs"
+      }
     }
   },
   "variables": {
