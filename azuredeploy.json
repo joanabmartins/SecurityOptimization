@@ -60,7 +60,6 @@
     },
     "EmailForSecurityCenterNotifications": {
       "type": "string",
-      "defaultValue": " ",
       "metadata": {
         "description": "Emails for ASC notifications (separated by commas)"
       }
