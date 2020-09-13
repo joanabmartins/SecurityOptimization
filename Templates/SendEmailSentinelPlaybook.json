@@ -1,0 +1,122 @@
+ {
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      
+      "LogicAppName": {
+        "type": "string",
+        "minLength": 1,
+        "defaultValue": "Sentinel-SendEmail-LogicApp"
+      }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+      "office365_1_Connection_Name": "office365SentinelPlaybookConnection",
+        "office365_1_Connection_DisplayName": "yourname@domain.com",
+        "azuresentinel_1_Connection_Name": "azureSentinelPlaybookConnection",
+        "azuresentinel_1_Connection_DisplayName": "yourname@domain.com"
+    },
+    "resources": [
+      {
+        "properties": {
+          "state": "Enabled",
+          "definition": {
+            "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+            "actions": {
+              "Send_an_email_(V2)": {
+                "type": "ApiConnection",
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "name": "@parameters('$connections')['office365']['connectionId']"
+                    }
+                  },
+                  "method": "post",
+                  "body": {
+                    "To": "yourname@domain.com",
+                    "Subject": "Azure Sentinel Alert: @{triggerBody()?['AlertDisplayName']} Severity: @{triggerBody()?['Severity']}",
+                    "Body": "<p>Hey!<br>\n<br>\nYou have received an alert from sentinel:<br>\n<br>\n<strong>Alert display name</strong>: @{triggerBody()?['AlertDisplayName']}<br>\n<br>\n<strong>Alert Type:</strong> @{triggerBody()?['AlertType']}<br>\n<br>\n<strong>Description</strong>: @{triggerBody()?['Description']}<br>\n<br>\n<strong>Generated at</strong>: @{triggerBody()?['TimeGenerated']}<br>\n<br>\n<strong>Severity</strong>: @{triggerBody()?['Severity']}</p>"
+                  },
+                  "path": "/v2/Mail"
+                },
+                "runAfter": {}
+              }
+            },
+            "parameters": {
+              "$connections": {
+                "defaultValue": {},
+                "type": "Object"
+              }
+            },
+            "triggers": {
+              "When_a_response_to_an_Azure_Sentinel_alert_is_triggered": {
+                "type": "ApiConnectionWebhook",
+                "inputs": {
+                  "host": {
+                    "connection": {
+                      "name": "@parameters('$connections')['azuresentinel']['connectionId']"
+                    }
+                  },
+                  "body": {
+                    "callback_url": "@{listCallbackUrl()}"
+                  },
+                  "path": "/subscribe"
+                }
+              }
+            },
+            "contentVersion": "1.0.0.0",
+            "outputs": {}
+          },
+          "parameters": {
+            "$connections": {
+              "value": {
+                "office365": {
+                  "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', variables('location'), '/managedApis/', 'office365')]",
+                  "connectionId": "[resourceId('Microsoft.Web/connections', variables('office365_1_Connection_Name'))]",
+                  "connectionName": "[variables('office365_1_Connection_Name')]"
+                },
+                "azuresentinel": {
+                  "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', variables('location'), '/managedApis/', 'azuresentinel')]",
+                  "connectionId": "[resourceId('Microsoft.Web/connections', variables('azuresentinel_1_Connection_Name'))]",
+                  "connectionName": "[variables('azuresentinel_1_Connection_Name')]"
+                }
+              }
+            }
+          }
+        },
+        "name": "[parameters('LogicAppName')]",
+        "type": "Microsoft.Logic/workflows",
+        "location": "[variables('location')]",
+        "apiVersion": "2016-06-01",
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/connections', variables('office365_1_Connection_Name'))]",
+          "[resourceId('Microsoft.Web/connections', variables('azuresentinel_1_Connection_Name'))]"
+        ]
+      },
+      {
+        "type": "MICROSOFT.WEB/CONNECTIONS",
+        "apiVersion": "2018-07-01-preview",
+        "name": "[variables('office365_1_Connection_Name')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "api": {
+            "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', variables('location'), '/managedApis/', 'office365')]"
+          },
+          "displayName": "[variables('office365_1_Connection_DisplayName')]"
+        }
+      },
+      {
+        "type": "MICROSOFT.WEB/CONNECTIONS",
+        "apiVersion": "2018-07-01-preview",
+        "name": "[variables('azuresentinel_1_Connection_Name')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "api": {
+            "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', variables('location'), '/managedApis/', 'azuresentinel')]"
+          },
+          "displayName": "[variables('azuresentinel_1_Connection_DisplayName')]"
+        }
+      }
+    ],
+    "outputs": {}
+  }

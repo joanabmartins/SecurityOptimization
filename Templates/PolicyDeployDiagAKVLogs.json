@@ -1,0 +1,162 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+                    "type": "string",
+                    "metadata": {
+                      "description": "Name of the central Log Analytics workspace that stores security event and data collected by Azure Security Center"
+                    }
+                  }
+      },
+    "variables": {
+        "policyAssignmentName": "deployAKVlogsPolicyAssign"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/policyDefinitions",
+            "name": "DeployAKVDiagsToLA",
+            "apiVersion": "2019-09-01",
+            
+            "properties": {
+        "displayName": "Apply Diagnostic Settings for Azure Key Vault to a Log Analytics workspace",
+        "mode": "Indexed",
+        "description": "This policy automatically deploys diagnostic settings for Azure Key Vault to a Log Analytics workspace.",
+        "metadata": {
+            "category": "Monitoring"
+        },
+        "parameters": {
+            "workspaceName": {
+                "type": "String"
+            }
+            },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.KeyVault/vaults"
+                    }
+                ]
+            },
+            "then": {
+                "effect": "deployIfNotExists",
+                "details": {
+                    "type": "Microsoft.Insights/diagnosticSettings",
+                    "existenceCondition": {
+                        "allOf": [
+                            {
+                                "field": "Microsoft.Insights/diagnosticSettings/logs.enabled",
+                                "equals": "true"
+                            },
+                            {
+                                "field": "Microsoft.Insights/diagnosticSettings/metrics.enabled",
+                                "equals": "true"
+                            },
+                            {
+                                "field": "Microsoft.Insights/diagnosticSettings/workspaceId",
+                                "equals": "[[parameters('workspaceName')]"
+                            }
+                        ]
+                    },
+                    "roleDefinitionIds": [
+                        "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                    ],
+                    "deployment": {
+                        "properties": {
+                            "mode": "incremental",
+                            "template": {
+                                "$schema": "http://schema.management.azure.com/schemas/2019-09-01/deploymentTemplate.json#",
+                                "contentVersion": "1.0.0.0",
+                                "parameters": {
+                                    "vaultName": {
+                                        "type": "string"
+                                    },
+                                    "location": {
+                                        "type": "string"
+                                    },
+                                    "workspaceName": {
+                                        "type": "string"
+                                    }
+                                },
+                                "variables": {
+                                    "profileName": "akvdiagToSecurityWorkspace",
+                                    "logsEnabled": "true",
+                                    "metricsEnabled": "true"
+                                },
+                                "resources": [
+                                    {
+                                        "type": "Microsoft.KeyVault/vaults/providers/diagnosticSettings",
+                                        "apiVersion": "2017-05-01-preview",
+                                        "name": "[[concat(parameters('vaultName'), '/', 'Microsoft.Insights/', variables('profileName'))]",
+                                        "location": "[[parameters('location')]]",
+                                        "dependsOn": [],
+                                        "properties": {
+                                            "workspaceId": "[[parameters('workspaceName')]",
+                                            "metrics": [
+                                                {
+                                                    "category": "AllMetrics",
+                                                    "enabled": "[[variables('metricsEnabled')]",
+                                                    "retentionPolicy": {
+                                                        "enabled": false,
+                                                        "days": 0
+                                                    }
+                                                }
+                                            ],
+                                            "logs": [
+                                                {
+                                                    "category": "AuditEvent",
+                                                    "enabled": "[[variables('logsEnabled')]"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "outputs": {
+                                    "policy": {
+                                        "type": "string",
+                                        "value": "[[concat(parameters('workspaceName'), 'configured for diagnostic logs for ', ': ', parameters('name'))]"
+                                    }
+                                }
+                            },
+                            "parameters": {
+                                "logAnalytics": {
+                                    "value": "[[parameters('workspaceName')]"
+                                },
+                                "location": {
+                                    "value": "[[field('location')]"
+                                },
+                                "vaultName": {
+                                    "value": "[[field('name')]"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+},
+ {
+                    "type": "Microsoft.Authorization/policyAssignments",
+                    "name": "[variables('policyAssignmentName')]",
+                    "apiVersion": "2019-09-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Authorization/policyDefinitions/', 'DeployAKVDiagsToLA')]"
+                    ],
+                    "location": "[deployment().location]",
+                    "identity": {
+                        "type": "SystemAssigned"
+                    },
+                    "properties": {
+                        "scope": "[concat(subscription().id)]",
+                        "policyDefinitionId": "[resourceId('Microsoft.Authorization/policyDefinitions/', 'DeployAKVDiagsToLA')]",
+                        "parameters": {
+                            "workspaceName": {
+                                "value": "[parameters('workspaceName')]"
+                            }
+                        }
+                    }
+ }
+    ]
+}

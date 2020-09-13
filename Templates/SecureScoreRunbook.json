@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationAccountName": {
+            "type": "String",
+            "metadata": {
+                "description": "Specify the name of your Automation Account"
+            }
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Automation/automationAccounts/runbooks",
+            "apiVersion": "2018-06-30",
+            "name": "[concat(parameters('automationAccountName'), '/', 'SecureScoreRunbook')]",
+            "location": "[variables('location')]",
+            "tags": {},
+            "properties": {
+                "logVerbose": "true",
+                "logProgress": "false",
+                "runbookType": "PowerShell",
+                "publishContentLink": {
+                    "uri": "https://raw.githubusercontent.com/vanessabruwer/scripties/master/ASC-Secure-Score/asc-securescore-to-la.ps1"
+                },
+                "description": "Gets Security Center Secure Score"
+            }
+        },
+        {
+            "type": "Microsoft.Automation/automationAccounts/schedules",
+            "apiVersion": "2015-10-31",
+            "name": "[concat(parameters('automationAccountName'), '/9AMDailySchedule')]",
+            "properties": {
+                "startTime": "2020-06-30T09:00:00+01:00",
+                "expiryTime": "9999-12-31T23:59:00+00:00",
+                "interval": 1,
+                "frequency": "Day",
+                "timeZone": "Europe/Lisbon"
+            }
+        }
+    ]
+}
