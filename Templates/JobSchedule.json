@@ -14,7 +14,7 @@
                 "description": "Specify the name of your Automation Account"
             }
         },
-        "jobschedule": {
+        "jobSchedule": {
             "defaultValue": "[newGuid()]",
             "type": "String",
             "metadata": {
