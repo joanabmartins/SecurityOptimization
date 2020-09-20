@@ -7,14 +7,11 @@
 			"metadata": {
 				"description": "ResourceID of the Log Analytics workspace in which resource logs should be saved."
             }
-        },
-        "logAnRgName": {
-            "type": "string"
-          }
-
+        }
 	},
 	"variables": {
-        "settingName": "activityLogsToSecurityLA"
+        "settingName": "activityLogsToSecurityLA",
+		"logAnRgName": "[resourceGroup().name]"
     },
 	"resources": [
 		{
@@ -23,7 +20,7 @@
 			"name": "[variables('settingName')]",
 			"location": "global",
 			"properties": {
-				"workspaceId": "[concat(subscription().id,'/resourceGroups/',parameters('logAnRgName'),'/providers/Microsoft.OperationalInsights/workspaces/',parameters('workspaceName'))]",
+				"workspaceId": "[concat(subscription().id,'/resourceGroups/',variables('logAnRgName'),'/providers/Microsoft.OperationalInsights/workspaces/',parameters('workspaceName'))]",
 				"logs": [
 					{
 						"category": "Administrative",
