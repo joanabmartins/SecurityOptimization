@@ -8,7 +8,7 @@
             "description": "Name of the central Log Analytics workspace that stores security event and data collected by Azure Security Center"
           }
         },
-        "EmailForNotifications": {
+        "emailForNotifications": {
           "type": "string",
           "metadata": {
             "description": "Email of the administrator who should be notified about Azure Security Center alert"
