@@ -52,8 +52,11 @@
                 "description": "Name for the new or existing log analytics workspace where you want to send ASC and diagnostic logs"
             }
         },
-        "rgName": {
-            "type": "string"
+        "resourceGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the new or existing RG to deploy the log analytics, automation account, etc.."
+            }
         },
         "automationAccountName": {
             "type": "string",
@@ -95,12 +98,14 @@
         },
         "emailForNotifications": {
             "type": "string",
+            "defaultValue": "user@domain.pt",
             "metadata": {
                 "description": "Email of the administrator who should be notified about Azure Security Center alert"
             }
         },
-        "ascOwnerContact": {
+        "ascPhoneContact": {
             "type": "string",
+            "defaultValue": "00000",
             "metadata": {
                 "description": "Phone number of the administrator should be notified about Azure Security Center alert"
             }
@@ -120,9 +125,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "AKVSolution",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]"
             ],
             "properties": {
@@ -141,9 +146,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "AntimalwareSol",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]"
             ],
             "properties": {
@@ -162,9 +167,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "AppGwSol",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]"
             ],
             "properties": {
@@ -183,9 +188,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "[parameters('automationAccountName')]",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]"
             ],
             "properties": {
@@ -205,9 +210,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "changeTraSol",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]"
             ],
             "properties": {
@@ -226,9 +231,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "[parameters('workspaceName')]",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]"
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -247,9 +252,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "NSGSol",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]"
             ],
             "properties": {
@@ -334,7 +339,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "[parameters('rgName')]",
+            "name": "[parameters('resourceGroupName')]",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
@@ -343,7 +348,7 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "rgName": { "value": "[parameters('rgName')]" },
+                    "resourceGroupName´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´": { "value": "[parameters('resourceGroupName')]" },
                     "location": { "value": "[parameters('location')]" }
                 }
             }
@@ -355,7 +360,7 @@
             "apiVersion": "2020-06-01",
             "name": "ASCStd",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]"
             ],
             "location": "[parameters('location')]",
@@ -368,8 +373,8 @@
                 "parameters": {
                     "workspaceName": { "value": "[parameters('workspaceName')]" },
                     "emailForNotifications": { "value": "[parameters('emailForNotifications')]" },
-                    "ascOwnerContact": { "value": "[parameters('ascOwnerContact')]" },
-                    "rgName": { "value": "[parameters('rgName')]" }
+                    "ascOwnerContact": { "value": "[parameters('ascPhoneContact')]" },
+                    "resourceGroupName": { "value": "[parameters('resourceGroupName')]" }
                 }
             }
         },
@@ -378,9 +383,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "SentinelPlaybook",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]"
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -398,9 +403,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "Sentinel",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]"
             ],
             "properties": {
@@ -418,9 +423,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "Syslog",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]"
             ],
             "properties": {
@@ -440,9 +445,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "UpdateSol",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('workspaceName')]",
                 "[parameters('automationAccountName')]"
             ],
@@ -463,9 +468,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "Workbook",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]"
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]"
             ],
             "properties": {
                 "mode": "Incremental",
