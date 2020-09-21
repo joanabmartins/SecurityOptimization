@@ -20,14 +20,11 @@
             "description": "Phone number of the administrator should be notified about Azure Security Center alert"
           }
         },
-        "rgName": {
+        "resourceGroupName": {
           "type": "string"
         }
       },
       "variables": {
-        "azureSentinelSolutionName": "[concat('SecurityInsights', '(', parameters('workspaceName'), ')')]",
-        "product": "OMSGallery/SecurityInsights",
-        "publisher": "Microsoft",
         "autoProvisionSetting": "On",
         "highSeverityAlertNotification": "On",
         "subscriptionOwnerNotification": "On",
@@ -40,7 +37,7 @@
           "name": "default",
           "properties": {
             "scope": "[subscription().id]",
-            "workspaceId": "[concat(subscription().id,'/resourceGroups/',parameters('rgName'),'/providers/Microsoft.OperationalInsights/workspaces/',parameters('workspaceName'))]"
+            "workspaceId": "[concat(subscription().id,'/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.OperationalInsights/workspaces/',parameters('workspaceName'))]"
           }
         },
         {
