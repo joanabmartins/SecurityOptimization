@@ -2,6 +2,50 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "DeploySecurityCenterStandard": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes",
+            "metadata": {
+                "description": "Do you want to enable Security Center Standard?"
+            }
+        },
+        "DeploySentinel": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes",
+            "metadata": {
+                "description": "Do you want to deploy Azure Sentinel?"
+            }
+        },
+        "AssignPolicies": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes",
+            "metadata": {
+                "description": "Do you want to assign policies that will enable automatically log collection of key vault, app gw, nsg, and azure firewall?"
+            }
+        },
+        "DeployWorkbook": {
+            "type": "string",
+            "defaultValue": "Yes",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Do you want to deploy our workbook?"
+            }
+        },
         "workspaceName": {
             "type": "string",
             "metadata": {
@@ -18,60 +62,61 @@
             }
         },
         "location": {
-          "type": "String",
-          "allowedValues": [
-            "australiacentral",
-            "australiaeast",
-            "australiasoutheast",
-            "brazilsouth",
-            "canadacentral",
-            "centralindia",
-            "centralus",
-            "eastasia",
-            "eastus",
-            "eastus2",
-            "francecentral",
-            "japaneast",
-            "koreacentral",
-            "northcentralus",
-            "northeurope",
-            "southafricanorth",
-            "southcentralus",
-            "southeastasia",
-            "uksouth",
-            "ukwest",
-            "westcentralus",
-            "westeurope",
-            "westus",
-            "westus2"
-          ],
-          "metadata": {
-            "description": "Specifies the location in which to create the workspace."
-          }
+            "type": "String",
+            "allowedValues": [
+                "australiacentral",
+                "australiaeast",
+                "australiasoutheast",
+                "brazilsouth",
+                "canadacentral",
+                "centralindia",
+                "centralus",
+                "eastasia",
+                "eastus",
+                "eastus2",
+                "francecentral",
+                "japaneast",
+                "koreacentral",
+                "northcentralus",
+                "northeurope",
+                "southafricanorth",
+                "southcentralus",
+                "southeastasia",
+                "uksouth",
+                "ukwest",
+                "westcentralus",
+                "westeurope",
+                "westus",
+                "westus2"
+            ],
+            "metadata": {
+                "description": "Specifies the location in which to create the workspace."
+            }
         },
         "emailForNotifications": {
-          "type": "string",
-          "metadata": {
-            "description": "Email of the administrator who should be notified about Azure Security Center alert"
-          }
+            "type": "string",
+            "metadata": {
+                "description": "Email of the administrator who should be notified about Azure Security Center alert"
+            }
         },
         "ascOwnerContact": {
-          "type": "string",
-          "metadata": {
-            "description": "Phone number of the administrator should be notified about Azure Security Center alert"
-          }
+            "type": "string",
+            "metadata": {
+                "description": "Phone number of the administrator should be notified about Azure Security Center alert"
+            }
         },
         "LogicAppName": {
-        "type": "string",
-        "minLength": 1,
-        "defaultValue": "Sentinel-SendEmail-LogicApp"
-      }
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "Sentinel-SendEmail-LogicApp"
+        }
     },
 
     "variables": {},
     "resources": [
-       
+
         {
+            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "AKVSolution",
@@ -92,6 +137,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "AntimalwareSol",
@@ -112,6 +158,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "AppGwSol",
@@ -132,6 +179,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('DeployWorkbook'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "[parameters('automationAccountName')]",
@@ -148,11 +196,12 @@
                 },
                 "parameters": {
                     "workspaceName": { "value": "[parameters('workspaceName')]" },
-                    "automationAccountName": {"value": "[parameters('automationAccountName')]"}
+                    "automationAccountName": { "value": "[parameters('automationAccountName')]" }
                 }
             }
         },
         {
+            "condition": "[equals(parameters('DeployWorkbook'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "changeTraSol",
@@ -172,7 +221,7 @@
                 }
             }
         },
-       
+
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
@@ -189,11 +238,12 @@
                 },
                 "parameters": {
                     "workspaceName": { "value": "[parameters('workspaceName')]" },
-                    "location": {"value": "[parameters('location')]"}
+                    "location": { "value": "[parameters('location')]" }
                 }
             }
         },
         {
+            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "NSGSol",
@@ -214,6 +264,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "policyAKVlogs",
@@ -230,6 +281,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "policyAppGwLogs",
@@ -246,6 +298,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "PolicyAzFwLogs",
@@ -262,6 +315,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "policyNSGLogs",
@@ -294,11 +348,16 @@
                 }
             }
         },
-        
+
         {
+            "condition": "[equals(parameters('DeploySecurityCenterStandard'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "ASCStd",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]"
+            ],
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
@@ -315,6 +374,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('DeploySentinel'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "SentinelPlaybook",
@@ -334,6 +394,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('DeploySentinel'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "Sentinel",
@@ -375,6 +436,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('DeploySentinel'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "UpdateSol",
@@ -397,6 +459,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('DeployWorkbook'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "Workbook",
