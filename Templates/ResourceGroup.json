@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "rgName": {
+        "resourceGroupName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the Resource Group"
@@ -46,7 +46,7 @@
     },
     "resources": [
         {
-            "name": "[parameters('rgName')]",
+            "name": "[parameters('resourceGroupName')]",
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2020-06-01",
             "location": "[parameters('location')]",
