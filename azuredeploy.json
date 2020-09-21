@@ -1,241 +1,418 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "DeploySecurityCenterStandard": {
-        "type": "string",
-        "allowedValues": [
-        "Yes",
-          "No"
-      ],
-        "defaultValue": "Yes",
-        "metadata": {
-          "description": "Do you want to enable Security Center Standard?"
-        }
-      },
-      "DeploySentinel": {
-        "type": "string",
-        "allowedValues": [
-          "Yes",
-          "No"
-        ],
-        "defaultValue": "Yes",
-        "metadata": {
-          "description": "Do you want to deploy Azure Sentinel?"
-        }
-      },
-      "AssignPolicies": {
-        "type": "string",
-        "allowedValues": [
-          "Yes",
-          "No"
-        ],
-        "defaultValue": "Yes",
-        "metadata": {
-          "description": "Do you want to assign policies that will enable automatically log collection of key vault, app gw, nsg, and azure firewall?"
-        }
-      },
-      "DeployWorkbook": {
-        "type": "string",
-        "defaultValue": "Yes",
-        "allowedValues": [
-          "Yes",
-          "No"
-        ],
-        "metadata": {
-          "description": "Do you want to deploy our workbook?"
-        }
-      },
-      "LogAnalyticsWorkspaceName": {
-        "type": "string",
-        "metadata": {
-          "description": "Name for the new or existing log analytics workspace where you want to send ASC and diagnostic logs"
-        }
-      },
-      "AutomationAccountName": {
-        "type": "string",
-        "metadata": {
-          "description": "Name for the new or existing automation account to store ASC secure score"
-        }
-      },
-      "EmailForSecurityCenterNotifications": {
-        "type": "string",
-        "defaultValue": " ",
-        "metadata": {
-          "description": "Emails for ASC notifications (separated by commas)"
-        }
-      }
-    },
-    "variables": {
-      "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sawinvm')]",
-      "nicName": "myVMNic",
-      "addressPrefix": "10.0.0.0/16",
-      "subnetName": "Subnet",
-      "subnetPrefix": "10.0.0.0/24",
-      "publicIPAddressName": "myPublicIP",
-      "vmName": "SimpleWinVM",
-      "virtualNetworkName": "MyVNET",
-      "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-      "networkSecurityGroupName": "default-NSG"
-    },
-    "resources": [
-      {
-        "type": "Microsoft.Storage/storageAccounts",
-        "apiVersion": "2018-11-01",
-        "name": "[variables('storageAccountName')]",
-        "location": "[parameters('location')]",
-        "sku": {
-          "name": "Standard_LRS"
+        "workspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for the new or existing log analytics workspace where you want to send ASC and diagnostic logs"
+            }
         },
-        "kind": "Storage",
-        "properties": {}
-      },
-      {
-        "type": "Microsoft.Network/publicIPAddresses",
-        "apiVersion": "2018-11-01",
-        "name": "[variables('publicIPAddressName')]",
-        "location": "[parameters('location')]",
-        "properties": {
-          "publicIPAllocationMethod": "Dynamic",
-          "dnsSettings": {
-            "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+        "rgName": {
+            "type": "string"
+        },
+        "automationAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for the new or existing automation account to store ASC secure score"
+            }
+        },
+        "location": {
+          "type": "String",
+          "allowedValues": [
+            "australiacentral",
+            "australiaeast",
+            "australiasoutheast",
+            "brazilsouth",
+            "canadacentral",
+            "centralindia",
+            "centralus",
+            "eastasia",
+            "eastus",
+            "eastus2",
+            "francecentral",
+            "japaneast",
+            "koreacentral",
+            "northcentralus",
+            "northeurope",
+            "southafricanorth",
+            "southcentralus",
+            "southeastasia",
+            "uksouth",
+            "ukwest",
+            "westcentralus",
+            "westeurope",
+            "westus",
+            "westus2"
+          ],
+          "metadata": {
+            "description": "Specifies the location in which to create the workspace."
           }
-        }
-      },
-      {
-        "comments":  "Default Network Security Group for template",
-        "type":  "Microsoft.Network/networkSecurityGroups",
-        "apiVersion":  "2019-08-01",
-        "name":  "[variables('networkSecurityGroupName')]",
-        "location":  "[parameters('location')]",
-        "properties": {
-          "securityRules": [
-            {
-              "name":  "default-allow-3389",
-              "properties": {
-                "priority":  1000,
-                "access":  "Allow",
-                "direction":  "Inbound",
-                "destinationPortRange":  "3389",
-                "protocol":  "Tcp",
-                "sourcePortRange":  "*",
-                "sourceAddressPrefix":  "*",
-                "destinationAddressPrefix":  "*"
-              }
-            }
-          ]
-        }
-      },
-      {
-        "type": "Microsoft.Network/virtualNetworks",
-        "apiVersion": "2018-11-01",
-        "name": "[variables('virtualNetworkName')]",
-        "location": "[parameters('location')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
-        ],
-        "properties": {
-          "addressSpace": {
-            "addressPrefixes": [
-              "[variables('addressPrefix')]"
-            ]
-          },
-          "subnets": [
-            {
-              "name": "[variables('subnetName')]",
-              "properties": {
-                "addressPrefix": "[variables('subnetPrefix')]",
-                "networkSecurityGroup": {
-                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
-                }
-              }
-            }
-          ]
-        }
-      },
-      {
-        "type": "Microsoft.Network/networkInterfaces",
-        "apiVersion": "2018-11-01",
-        "name": "[variables('nicName')]",
-        "location": "[parameters('location')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
-        ],
-        "properties": {
-          "ipConfigurations": [
-            {
-              "name": "ipconfig1",
-              "properties": {
-                "privateIPAllocationMethod": "Dynamic",
-                "publicIPAddress": {
-                  "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
-                },
-                "subnet": {
-                  "id": "[variables('subnetRef')]"
-                }
-              }
-            }
-          ]
-        }
-      },
-      {
-        "type": "Microsoft.Compute/virtualMachines",
-        "apiVersion": "2018-10-01",
-        "name": "[variables('vmName')]",
-        "location": "[parameters('location')]",
-        "dependsOn": [
-          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-          "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
-        ],
-        "properties": {
-          "hardwareProfile": {
-            "vmSize": "[parameters('vmSize')]"
-          },
-          "osProfile": {
-            "computerName": "[variables('vmName')]",
-            "adminUsername": "[parameters('adminUsername')]",
-            "adminPassword": "[parameters('adminPassword')]"
-          },
-          "storageProfile": {
-            "imageReference": {
-              "publisher": "MicrosoftWindowsServer",
-              "offer": "WindowsServer",
-              "sku": "[parameters('windowsOSVersion')]",
-              "version": "latest"
-            },
-            "osDisk": {
-              "createOption": "FromImage"
-            },
-            "dataDisks": [
-              {
-                "diskSizeGB": 1023,
-                "lun": 0,
-                "createOption": "Empty"
-              }
-            ]
-          },
-          "networkProfile": {
-            "networkInterfaces": [
-              {
-                "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
-              }
-            ]
-          },
-          "diagnosticsProfile": {
-            "bootDiagnostics": {
-              "enabled": true,
-              "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
-            }
+        },
+        "emailForNotifications": {
+          "type": "string",
+          "metadata": {
+            "description": "Email of the administrator who should be notified about Azure Security Center alert"
           }
-        }
+        },
+        "ascOwnerContact": {
+          "type": "string",
+          "metadata": {
+            "description": "Phone number of the administrator should be notified about Azure Security Center alert"
+          }
+        },
+        "LogicAppName": {
+        "type": "string",
+        "minLength": 1,
+        "defaultValue": "Sentinel-SendEmail-LogicApp"
       }
+    },
+
+    "variables": {},
+    "resources": [
+       
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "AKVSolution",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/AKVSolution.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "AntimalwareSol",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/AntimalwareAssessmentSolution.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "AppGwSol",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/AppGwSolution.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('automationAccountName')]",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/AutomationAccount.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" },
+                    "automationAccountName": {"value": "[parameters('automationAccountName')]"}
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "changeTraSol",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/ChangeTracking.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+       
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('workspaceName')]",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/LogAnalyticsWorkspace.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" },
+                    "location": {"value": "[parameters('location')]"}
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "NSGSol",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/NSGSolution.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "policyAKVlogs",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagAKVLogs.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "policyAppGwLogs",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagAppGwLogs.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "PolicyAzFwLogs",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagAzFwLogs.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "policyNSGLogs",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagNSGLogs.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('rgName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/ResourceGroup.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "rgName": { "value": "[parameters('rgName')]" },
+                    "location": { "value": "[parameters('location')]" }
+                }
+            }
+        },
+        
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "ASCStd",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SecurityCenterSTD.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" },
+                    "emailForNotifications": { "value": "[parameters('emailForNotifications')]" },
+                    "ascOwnerContact": { "value": "[parameters('ascOwnerContact')]" },
+                    "rgName": { "value": "[parameters('rgName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "SentinelPlaybook",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SendEmailSentinelPlaybook.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "LogicAppName": { "value": "[parameters('LogicAppName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "Sentinel",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SentinelSolution.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "Syslog",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SyslogColl.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" },
+                    "location": { "value": "[parameters('location')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "UpdateSol",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('workspaceName')]",
+                "[parameters('automationAccountName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/UpdateManagementSol.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" },
+                    "automationAccountName": { "value": "[parameters('automationAccountName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "Workbook",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/Workbook.json",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        }
     ],
     "outputs": {
-      "hostname": {
-        "type": "string",
-        "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
-      }
     }
-  }
-  
+}
