@@ -28,13 +28,15 @@
     },
     "variables": {
         "location": "[resourceGroup().location]",
-        "datePlus1Hour": "[dateTimeAdd(parameters('baseTime'), 'PT1H')]"
+        "datePlus1Hour": "[dateTimeAdd(parameters('baseTime'), 'PT1H')]",
+        "scheduleName": "/9AMDailySchedule",
+        "runbookName": "SecureScoreRunbook"
     },
     "resources": [
         {
             "type": "Microsoft.Automation/automationAccounts/runbooks",
             "apiVersion": "2018-06-30",
-            "name": "[concat(parameters('automationAccountName'), '/', 'SecureScoreRunbook')]",
+            "name": "[concat(parameters('automationAccountName'),'/',variables('runbookName'))]",
             "location": "[variables('location')]",
             "tags": {},
             "properties": {
@@ -50,7 +52,7 @@
         {
             "type": "Microsoft.Automation/automationAccounts/schedules",
             "apiVersion": "2015-10-31",
-            "name": "[concat(parameters('automationAccountName'), '/9AMDailySchedule')]",
+            "name": "[concat(parameters('automationAccountName'),'/',variables('scheduleName'))]",
             "properties": {
                 "startTime": "[variables('datePlus1Hour')]",
                 "expiryTime": "9999-12-31T23:59:00+00:00",
@@ -62,6 +64,10 @@
         {
             "type": "Microsoft.Automation/automationAccounts/jobSchedules",
             "apiVersion": "2015-10-31",
+            "dependsOn": [
+                "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/schedules/', variables('scheduleName'))]",
+				"[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/runbooks/', variables('runbookName'))]"
+                ],
             "name": "[concat(parameters('automationAccountName'), '/', parameters('Jobschedule'))]",
             "properties": {
                 "schedule": {
