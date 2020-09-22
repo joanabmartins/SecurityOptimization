@@ -357,9 +357,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "SecureScorRun",
-            "resourceGroup": "[parameters('rgName')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
                 "[parameters('automationAccountName')]",
                 "[parameters('workspaceName')]"
             ],
