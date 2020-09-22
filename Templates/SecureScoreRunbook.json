@@ -7,10 +7,28 @@
             "metadata": {
                 "description": "Specify the name of your Automation Account"
             }
-        }
+        },
+        "baseTime":{
+            "type":"string",
+            "defaultValue": "[utcNow('u')]"
+        },
+		"Jobschedule": {
+            "defaultValue": "[newGuid()]",
+            "type": "String",
+            "metadata": {
+                "description": "The unique guid for this workbook instance"
+            }
+        },
+		"workspaceName": {
+            "type": "string",
+            "metadata": {
+              "description": "Name of the Log Analytics workspace your Azure Sentinel connects to"
+            }
+          }
     },
     "variables": {
-        "location": "[resourceGroup().location]"
+        "location": "[resourceGroup().location]",
+        "datePlus1Hour": "[dateTimeAdd(parameters('baseTime'), 'PT1H')]"
     },
     "resources": [
         {
@@ -34,11 +52,28 @@
             "apiVersion": "2015-10-31",
             "name": "[concat(parameters('automationAccountName'), '/9AMDailySchedule')]",
             "properties": {
-                "startTime": "2020-06-30T09:00:00+01:00",
+                "startTime": "[variables('datePlus1Hour')]",
                 "expiryTime": "9999-12-31T23:59:00+00:00",
                 "interval": 1,
                 "frequency": "Day",
                 "timeZone": "Europe/Lisbon"
+            }
+        },
+        {
+            "type": "Microsoft.Automation/automationAccounts/jobSchedules",
+            "apiVersion": "2015-10-31",
+            "name": "[concat(parameters('automationAccountName'), '/', parameters('Jobschedule'))]",
+            "properties": {
+                "schedule": {
+                    "name": "9AMDailySchedule"
+                },
+                "runbook": {
+                    "name": "SecureScoreRunbook"
+                },
+                "parameters": {
+                    "WORKSPACEID": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]",
+                    "OMSSHAREDKEY": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').primarySharedKey]"
+                }
             }
         }
     ]
