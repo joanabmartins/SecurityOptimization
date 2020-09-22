@@ -353,7 +353,28 @@
                 }
             }
         },
-
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "SecureScorRun",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('rgName'))]",
+                "[parameters('automationAccountName')]",
+                "[parameters('workspaceName')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SecureScoreRunbook.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "automationAccountName": { "value": "[parameters('automationAccountName')]" },
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
         {
             "condition": "[equals(parameters('DeploySecurityCenterStandard'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
