@@ -34,7 +34,7 @@ We developed this workbook to make it easier for you to check Security Center, S
 
  * **What needs to be configured manually** 
 
-->Common Windows security logs collection in Azure Security Center
+->[Common Windows security logs collection in Azure Security Center](https://docs.microsoft.com/en-us/azure/security-center/security-center-enable-data-collection#data-collection-tier)
 
 ->Continuous export of ASC recommendation and alerts
 
