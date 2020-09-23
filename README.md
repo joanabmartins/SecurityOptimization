@@ -32,6 +32,13 @@ We developed this workbook to make it easier for you to check Security Center, S
 </p>
 
 
+ * **What need to be configured manually** 
+
+->Common Windows security logs collection in Azure Security Center
+
+->Continuous export of ASC recommendation and alerts
+
+->Run as account in automation account
 
 
  
