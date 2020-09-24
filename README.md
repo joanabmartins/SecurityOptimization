@@ -9,6 +9,7 @@ After clicking the button bellow you can choose what you want to deploy and fill
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjoanabmartins%2FSecurityOptimization%2Fmaster%2Fazuredeploy.json)
 
  <br/>
+ 
  * **Enable Security Center Standard** 
 
 All Azure subscriptions come with Security Center free enabled, but Security Center Standard helps you find and fix security vulnerabilities, apply access and application controls to block malicious activity, detect threats using analytics and intelligence, and respond quickly when under attack. You can try Security Center Standard at no cost for 30 days when you enable it. You can consult the prices that you pay after it [here](https://azure.microsoft.com/en-us/pricing/details/security-center/).
@@ -39,9 +40,9 @@ We developed this workbook to make it easier for you to check Security Center, S
 
 ->[Continuous export of ASC recommendation and alerts](https://docs.microsoft.com/en-us/azure/security-center/continuous-export)
 
-->[Create a run as account in automation account] (https://docs.microsoft.com/en-us/azure/automation/manage-runas-account#create-a-run-as-account-in-azure-portal)
+->[Create a run as account in automation account](https://docs.microsoft.com/en-us/azure/automation/manage-runas-account#create-a-run-as-account-in-azure-portal)
 
-->[Connect data soureces to Azure Sentinel] (https://docs.microsoft.com/en-us/azure/sentinel/quickstart-onboard#connect-data-sources)
+->[Connect data soureces to Azure Sentinel](https://docs.microsoft.com/en-us/azure/sentinel/quickstart-onboard#connect-data-sources)
 
 
  
