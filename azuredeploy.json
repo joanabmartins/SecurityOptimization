@@ -348,7 +348,7 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "resourceGroupName´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´": { "value": "[parameters('resourceGroupName')]" },
+                    "resourceGroupName": { "value": "[parameters('resourceGroupName')]" },
                     "location": { "value": "[parameters('location')]" }
                 }
             }
