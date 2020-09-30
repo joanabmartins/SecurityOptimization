@@ -184,7 +184,6 @@
             }
         },
         {
-            "condition": "[equals(parameters('DeployWorkbook'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "[parameters('automationAccountName')]",
