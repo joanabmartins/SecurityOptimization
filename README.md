@@ -18,13 +18,13 @@ After clicking the button bellow you can choose what you want to deploy and fill
  
  * **Assign policies** - Improving security comes hand in hand with governance. You can remediate the security recommendations as they appear, but as your environment grows, it is probable that you will get that recommendation again. We propose that you solve this through governance, by making sure that some security requirements are automatically applied as you develop your environment. We suggest assigning the following [policies](https://docs.microsoft.com/en-us/azure/governance/policy/overview):
  
-| Policy | Details |
-| ------ | ------ |
-| Enable diagnostic logs collection from logic apps, service bus, event hub, activity logs and key vault | [plugins/dropbox/README.md][PlDb] |
-| Install Integrated vulnerability assessment solution (powered by Qualys) | [plugins/github/README.md][PlGh] |
-| Deny http access in web apps, api apps and storage accounts | [plugins/googledrive/README.md][PlGd] |
-| Enable auditing in Azure SQL | [plugins/onedrive/README.md][PlOd] |
-| Install Endpoint Protection | [plugins/medium/README.md][PlMe] |
+| Policy |
+| ------ |
+| Enable diagnostic logs collection from logic apps, service bus, event hub, activity logs and key vault | 
+| Install Integrated vulnerability assessment solution (powered by Qualys) | 
+| Deny http access in web apps, api apps and storage accounts | 
+| Enable auditing in Azure SQL | 
+| Install Endpoint Protection | 
 
  
  * **Deploy workbook to help you follow and analyze your security center recommendations, alerts and trends** - We developed this workbook to make it easier for you to check Security Center, Sentinel and dashboards related to some of the diagnostic logs that you have enabled in one place.
