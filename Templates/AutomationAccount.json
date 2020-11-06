@@ -48,14 +48,14 @@
 	{
             "apiVersion": "2015-10-31",
             "type": "Microsoft.Automation/automationAccounts/modules",
-            "name": "[concat(parameters('automationAccountName'), '/', variables('azModuleName')]",
+            "name": "[concat(parameters('automationAccountName'), '/', variables('azModuleName'))]",
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
             ],
             "properties": {
                 "contentLink": {
-                    "uri": "[variables('azModuleURL)]"
+                    "uri": "[variables('azModuleURL')]"
                 }
             }
         }
