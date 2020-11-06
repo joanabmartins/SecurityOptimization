@@ -16,7 +16,9 @@
     }
 },
 "variables": {
-    "location": "[resourceGroup().location]"
+    "location": "[resourceGroup().location]",
+	"azModuleName": "Az.Accounts",
+	"azModuleURL": "https://devopsgallerystorage.blob.core.windows.net/packages/az.accounts.2.1.2.nupkg"
    },
 	"resources": [
     {
@@ -42,6 +44,23 @@
         "properties": {
             "resourceId": "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
         }
-    }
+    }, 
+		{
+			"dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+        ]
+            "apiVersion": "2015-10-31",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "name": "[concat(parameters('automationAccountName'), '/', variables('azModuleName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+            ],
+            "properties": {
+                "contentLink": {
+                    "uri": "[variables('azModuleURL)]"
+                }
+            }
+        }
    ]
   }
