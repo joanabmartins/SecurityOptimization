@@ -77,7 +77,7 @@
                     "name": "SecureScoreRunbook"
                 },
                 "parameters": {
-                    "WORKSPACEID": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]",
+                    "OMSWORKSPACEID": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]",
                     "OMSSHAREDKEY": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').primarySharedKey]"
                 }
             }
