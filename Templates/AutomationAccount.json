@@ -45,10 +45,7 @@
             "resourceId": "[resourceId('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
         }
     }, 
-		{
-			"dependsOn": [
-            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
-        ]
+	{
             "apiVersion": "2015-10-31",
             "type": "Microsoft.Automation/automationAccounts/modules",
             "name": "[concat(parameters('automationAccountName'), '/', variables('azModuleName')]",
