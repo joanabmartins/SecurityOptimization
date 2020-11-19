@@ -13,7 +13,7 @@
                 "description": "Do you want to enable Security Center Standard?"
             }
         },
-        "DeploySentinel": {
+        "AssignPolicyToEnableDiagnosticLogs": {
             "type": "string",
             "allowedValues": [
                 "Yes",
@@ -21,10 +21,10 @@
             ],
             "defaultValue": "Yes",
             "metadata": {
-                "description": "Do you want to deploy Azure Sentinel?"
+                "description": "Do you want to assign policies that will enable automatically log collection of logic apps, service bus, event hub, activity logs and key vault?"
             }
         },
-        "AssignPolicies": {
+        "AssignPolicyToInstallQualysExtension": {
             "type": "string",
             "allowedValues": [
                 "Yes",
@@ -32,7 +32,40 @@
             ],
             "defaultValue": "Yes",
             "metadata": {
-                "description": "Do you want to assign policies that will enable automatically log collection of key vault, app gw, nsg, and azure firewall?"
+                "description": "Do you want to assign a policy that will automatically install integrated vulnerability assessment solution (powered by Qualys)"
+            }
+        },
+        "AssignPolicyToEnforceHttpsAccess": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes",
+            "metadata": {
+                "description": "Do you want to assign a policy that will automatically enforce https access in web apps, api apps and storage accounts"
+            }
+        },
+        "AssignPolicyToEnforceAzureSqlAuditing": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes",
+            "metadata": {
+                "description": "Do you want to assign a policy that will automatically enable auditing in Azure SQL"
+            }
+        },
+        "AssignPolicyToInstallEndpointProtection": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes",
+            "metadata": {
+                "description": "Do you want to assign a policy that will automatically install Microsoft Antimalware extension"
             }
         },
         "DeployWorkbook": {
@@ -44,6 +77,17 @@
             ],
             "metadata": {
                 "description": "Do you want to deploy our workbook?"
+            }
+        },
+        "DeploySentinel": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes",
+            "metadata": {
+                "description": "Do you want to deploy Azure Sentinel?"
             }
         },
         "workspaceName": {
@@ -66,6 +110,7 @@
         },
         "location": {
             "type": "String",
+            "defaultValue": "westeurope",
             "allowedValues": [
                 "australiacentral",
                 "australiaeast",
@@ -101,13 +146,6 @@
             "defaultValue": "user@domain.pt",
             "metadata": {
                 "description": "Email of the administrator who should be notified about Azure Security Center alert"
-            }
-        },
-        "ascPhoneContact": {
-            "type": "string",
-            "defaultValue": "00000",
-            "metadata": {
-                "description": "Phone number of the administrator should be notified about Azure Security Center alert"
             }
         },
         "LogicAppName": {
