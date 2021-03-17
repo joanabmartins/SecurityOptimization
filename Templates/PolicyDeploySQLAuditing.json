@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the central Resource Group Name to store the log collection"
+            }
+        }
+      },
+    "variables": {
+        "policyAssignmentName": "DeployAuditingOnSQLservers",
+        "policyDefID": "f4c68484-132f-41f9-9b6d-3e4b1cb5503"
+    },
+    "resources": [
+            {
+                    "type": "Microsoft.Authorization/policyAssignments",
+                    "name": "[variables('policyAssignmentName')]",
+                    "apiVersion": "2019-09-01",
+                    "location": "[deployment().location]",
+                    "identity": {
+                        "type": "SystemAssigned"
+                    },
+                    "properties": {
+                        "scope": "[concat(subscription().id)]",
+                        "policyDefinitionId": "[resourceId('Microsoft.Authorization/policyDefinitions/', variables('policyDefID'))]",
+                        "parameters": {
+                            "storageAccountsResourceGroup": {
+                                "value": "[parameters('resourceGroupName')]"
+                            }
+                        }
+                    }
+ }
+    ]
+}
