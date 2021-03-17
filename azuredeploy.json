@@ -2,17 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "DeploySecurityCenterStandard": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "Yes",
-            "metadata": {
-                "description": "Do you want to enable Security Center Standard?"
-            }
-        },
         "AssignPolicyToEnableDiagnosticLogs": {
             "type": "string",
             "allowedValues": [
@@ -21,10 +10,10 @@
             ],
             "defaultValue": "Yes",
             "metadata": {
-                "description": "Do you want to assign policies that will enable automatically log collection of logic apps, service bus, event hub, activity logs and key vault?"
+                "description": "Collect logs for your logic apps, service bus, event hub, and key vault"
             }
         },
-        "AssignPolicyToInstallQualysExtension": {
+        "AssignPolicyToInstallQualysVAExtension": {
             "type": "string",
             "allowedValues": [
                 "Yes",
@@ -32,7 +21,7 @@
             ],
             "defaultValue": "Yes",
             "metadata": {
-                "description": "Do you want to assign a policy that will automatically install integrated vulnerability assessment solution (powered by Qualys)"
+                "description": "Install Qualys Vulnerability assessment soluiton on your VMs - You need to have Azure Defender!"
             }
         },
         "AssignPolicyToEnforceHttpsAccess": {
@@ -43,7 +32,18 @@
             ],
             "defaultValue": "Yes",
             "metadata": {
-                "description": "Do you want to assign a policy that will automatically enforce https access in web apps, api apps and storage accounts"
+                "description": "Enforce https access in web apps"
+            }
+        },
+        "AssignPolicyToEnforceSecureAccess": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes",
+            "metadata": {
+                "description": "Enforce secure transfer required for your storage accounts"
             }
         },
         "AssignPolicyToEnforceAzureSqlAuditing": {
@@ -54,40 +54,13 @@
             ],
             "defaultValue": "Yes",
             "metadata": {
-                "description": "Do you want to assign a policy that will automatically enable auditing in Azure SQL"
+                "description": "Enable auditing in Azure SQL"
             }
         },
-        "AssignPolicyToInstallEndpointProtection": {
+        "resourceGroupName": {
             "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "Yes",
             "metadata": {
-                "description": "Do you want to assign a policy that will automatically install Microsoft Antimalware extension"
-            }
-        },
-        "DeployWorkbook": {
-            "type": "string",
-            "defaultValue": "Yes",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "metadata": {
-                "description": "Do you want to deploy our workbook?"
-            }
-        },
-        "DeploySentinel": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "Yes",
-            "metadata": {
-                "description": "Do you want to deploy Azure Sentinel?"
+                "description": "Name of the new or existing RG to deploy the log analytics and storage account."
             }
         },
         "workspaceName": {
@@ -96,20 +69,8 @@
                 "description": "Name for the new or existing log analytics workspace where you want to send ASC and diagnostic logs"
             }
         },
-        "resourceGroupName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the new or existing RG to deploy the log analytics, automation account, etc.."
-            }
-        },
-        "automationAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name for the new or existing automation account to store ASC secure score"
-            }
-        },
         "location": {
-            "type": "String",
+            "type": "string",
             "defaultValue": "westeurope",
             "allowedValues": [
                 "australiacentral",
@@ -140,130 +101,10 @@
             "metadata": {
                 "description": "Specifies the location in which to create the workspace."
             }
-        },
-        "emailForNotifications": {
-            "type": "string",
-            "defaultValue": "user@domain.pt",
-            "metadata": {
-                "description": "Email of the administrator who should be notified about Azure Security Center alert"
-            }
-        },
-        "LogicAppName": {
-            "type": "string",
-            "minLength": 1,
-            "defaultValue": "Sentinel-SendEmail-LogicApp"
         }
     },
-
     "variables": {},
     "resources": [
-
-        {
-            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "AKVSolution",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/AKVSolution.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "AntimalwareSol",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/AntimalwareAssessmentSolution.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "AppGwSol",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/AppGwSolution.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "[parameters('automationAccountName')]",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/AutomationAccount.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" },
-                    "automationAccountName": { "value": "[parameters('automationAccountName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('DeployWorkbook'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "changeTraSol",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/ChangeTracking.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
-                }
-            }
-        },
-
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
@@ -285,36 +126,31 @@
             }
         },
         {
-            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
+            "condition": "[equals(parameters('AssignPolicyToInstallQualysVAExtension'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "NSGSol",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/NSGSolution.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "policyAKVlogs",
+            "name": "policylogs",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagAKVLogs.json",
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployQualys.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('AssignPolicyToEnableDiagnosticLogs'),'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "policylogs",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagLogs.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -323,7 +159,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
+            "condition": "[equals(parameters('AssignPolicyToEnforceHttpsAccess'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "policyAppGwLogs",
@@ -331,16 +167,27 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagAppGwLogs.json",
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyAppHttpsAccess.json",
                     "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
                 }
             }
         },
         {
-            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
+            "condition": "[equals(parameters('AssignPolicyToEnforceSecureAccess'),'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "policyAppGwLogs",
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicySASecureTransfer.json",
+                    "contentVersion": "1.0.0.0"
+                }
+        }
+    },
+        {
+            "condition": "[equals(parameters('AssignPolicyToEnforceAzureSqlAuditing'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "PolicyAzFwLogs",
@@ -348,28 +195,28 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagAzFwLogs.json",
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeploySQLAuditing.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                    "resourceGroupName": { "value": "[parameters('resourceGroupName')]" }
                 }
             }
         },
         {
-            "condition": "[equals(parameters('AssignPolicies'),'Yes')]",
+            "condition": "[equals(parameters('AssignPolicyToEnforceAzureSqlAuditing'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "policyNSGLogs",
+            "name": "PolicyAzFwLogs",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagNSGLogs.json",
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeploySQLAuditing.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                    "resourceGroupName": { "value": "[parameters('resourceGroupName')]" }
                 }
             }
         },
@@ -387,154 +234,6 @@
                 "parameters": {
                     "resourceGroupName": { "value": "[parameters('resourceGroupName')]" },
                     "location": { "value": "[parameters('location')]" }
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "SecureScorRun",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('automationAccountName')]",
-                "[parameters('workspaceName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SecureScoreRunbook.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "automationAccountName": { "value": "[parameters('automationAccountName')]" },
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('DeploySecurityCenterStandard'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "ASCStd",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]"
-            ],
-            "location": "[parameters('location')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SecurityCenterSTD.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" },
-                    "emailForNotifications": { "value": "[parameters('emailForNotifications')]" },
-                    "ascOwnerContact": { "value": "[parameters('ascPhoneContact')]" },
-                    "resourceGroupName": { "value": "[parameters('resourceGroupName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('DeploySentinel'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "SentinelPlaybook",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SendEmailSentinelPlaybook.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "LogicAppName": { "value": "[parameters('LogicAppName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('DeploySentinel'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "Sentinel",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SentinelSolution.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "Syslog",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/SyslogColl.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" },
-                    "location": { "value": "[parameters('location')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('DeploySentinel'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "UpdateSol",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]",
-                "[parameters('workspaceName')]",
-                "[parameters('automationAccountName')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/UpdateManagementSol.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" },
-                    "automationAccountName": { "value": "[parameters('automationAccountName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('DeployWorkbook'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "Workbook",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/Workbook.json",
-                    "contentVersion": "1.0.0.0"
                 }
             }
         }
