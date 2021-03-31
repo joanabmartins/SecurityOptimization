@@ -129,7 +129,7 @@
             "condition": "[equals(parameters('AssignPolicyToInstallQualysVAExtension'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "policylogs",
+            "name": "policyqualys",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
