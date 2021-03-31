@@ -63,7 +63,7 @@
                 "description": "Name for the log analytics workspace where you want to send diagnostic logs"
             }
         },
-    "location": {
+		"location": {
             "type": "string",
             "defaultValue": "westeurope",
             "allowedValues": [
@@ -95,8 +95,7 @@
             "metadata": {
                 "description": "Specifies the location in which to create the workspace."
             }
-        }
-    },
+        }},
     "variables": {},
     "resources": [
         {
@@ -161,7 +160,7 @@
         }
     },
         {
-            "condition": "[equals(parameters('AssignPolicyToEnforceAzureSqlAuditing'),'Yes')]",
+            "condition": "[equals(parameters('AssignPolicyToEnforceAzureSqlAdvancedDataSecurity'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
             "name": "PolicySQLAudit",
@@ -169,7 +168,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeploySQLAuditing.json",
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/AssignPolicyToEnforceAzureSqlAdvancedDataSecurity.json",
                     "contentVersion": "1.0.0.0"
                 }
             }
