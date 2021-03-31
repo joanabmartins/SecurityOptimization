@@ -10,8 +10,8 @@
         }
       },
     "variables": {
-        "policyAssignmentName": "DeployAuditingOnSQLservers",
-        "policyDefID": "f4c68484-132f-41f9-9b6d-3e4b1cb5503"
+        "policyAssignmentName": "DeployAdvancedDataSecSQLservers",
+        "policyDefID": "6134c3db-786f-471e-87bc-8f479dc890f6"
     },
     "resources": [
             {
@@ -24,11 +24,7 @@
                     },
                     "properties": {
                         "scope": "[concat(subscription().id)]",
-                        "policyDefinitionId": "[resourceId('Microsoft.Authorization/policyDefinitions/', variables('policyDefID'))]",
-                        "parameters": {
-                            "storageAccountsResourceGroup": {
-                                "value": "[parameters('resourceGroupName')]"
-                            }
+                        "policyDefinitionId": "[resourceId('Microsoft.Authorization/policyDefinitions/', variables('policyDefID'))]"
                         }
                     }
  }
