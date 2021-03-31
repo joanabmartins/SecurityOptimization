@@ -46,7 +46,7 @@
                 "description": "Enforce secure transfer required for your storage accounts"
             }
         },
-        "AssignPolicyToEnforceAzureSqlAuditing": {
+        "AssignPolicyToEnforceAzureSqlAdvancedDataSecurity": {
             "type": "string",
             "allowedValues": [
                 "Yes",
