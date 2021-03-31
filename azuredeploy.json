@@ -62,7 +62,41 @@
             "metadata": {
                 "description": "Name for the log analytics workspace where you want to send diagnostic logs"
             }
-        }},
+        },
+    "location": {
+            "type": "string",
+            "defaultValue": "westeurope",
+            "allowedValues": [
+                "australiacentral",
+                "australiaeast",
+                "australiasoutheast",
+                "brazilsouth",
+                "canadacentral",
+                "centralindia",
+                "centralus",
+                "eastasia",
+                "eastus",
+                "eastus2",
+                "francecentral",
+                "japaneast",
+                "koreacentral",
+                "northcentralus",
+                "northeurope",
+                "southafricanorth",
+                "southcentralus",
+                "southeastasia",
+                "uksouth",
+                "ukwest",
+                "westcentralus",
+                "westeurope",
+                "westus",
+                "westus2"
+            ],
+            "metadata": {
+                "description": "Specifies the location in which to create the workspace."
+            }
+        }
+    },
     "variables": {},
     "resources": [
         {
