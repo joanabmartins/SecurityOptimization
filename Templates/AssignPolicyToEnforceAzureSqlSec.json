@@ -27,6 +27,5 @@
                         "policyDefinitionId": "[resourceId('Microsoft.Authorization/policyDefinitions/', variables('policyDefID'))]"
                         }
                     }
- }
     ]
 }
