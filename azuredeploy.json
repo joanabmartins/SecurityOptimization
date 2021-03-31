@@ -60,13 +60,13 @@
         "resourceGroupName": {
             "type": "string",
             "metadata": {
-                "description": "Name of the new or existing RG to deploy the log analytics and storage account."
+                "description": "Name of the new or existing RG to deploy the log analytics and storage account (for logs)."
             }
         },
         "workspaceName": {
             "type": "string",
             "metadata": {
-                "description": "Name for the new or existing log analytics workspace where you want to send ASC and diagnostic logs"
+                "description": "Name for the new or existing log analytics workspace where you want to send diagnostic logs"
             }
         },
         "location": {
