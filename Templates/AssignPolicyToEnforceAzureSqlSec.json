@@ -2,12 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-08-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "resourceGroupName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the central Resource Group Name to store the log collection"
-            }
-        }
       },
     "variables": {
         "policyAssignmentName": "DeployAdvancedDataSecSQLservers",
