@@ -162,7 +162,7 @@
             "condition": "[equals(parameters('AssignPolicyToEnforceHttpsAccess'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "policyAppGwLogs",
+            "name": "policyHttps",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
@@ -176,7 +176,7 @@
             "condition": "[equals(parameters('AssignPolicyToEnforceSecureAccess'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "policyAppGwLogs",
+            "name": "policySASec",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
@@ -190,7 +190,7 @@
             "condition": "[equals(parameters('AssignPolicyToEnforceAzureSqlAuditing'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "PolicyAzFwLogs",
+            "name": "PolicySQLAudit",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
