@@ -176,19 +176,19 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "diaglogsEffect": {
+                    "AssignPolicyToEnableDiagnosticLogs": {
                         "value": "[parameters('AssignPolicyToEnableDiagnosticLogs')]"
                     },
-                    "qualysVAEffect": {
+                    "AssignPolicyToInstallQualysVAExtension": {
                         "value": "[parameters('AssignPolicyToInstallQualysVAExtension')]"
                     },
-                    "appserviceEffect": {
+                    "AssignPolicyToEnforceHttpsAccess": {
                         "value": "[parameters('AssignPolicyToEnforceHttpsAccess')]"
                     },
-                    "saEffect": {
+                    "AssignPolicyToEnforceSecureAccess": {
                         "value": "[parameters('AssignPolicyToEnforceSecureAccess')]"
                     },
-                    "sqlEffect": {
+                    "AssignPolicyToEnforceAzureSqlAdvancedDataSecurity": {
                         "value": "[parameters('AssignPolicyToEnforceAzureSqlAdvancedDataSecurity')]"
                     },
                     "location": {
