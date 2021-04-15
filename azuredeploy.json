@@ -153,6 +153,9 @@
                 "templateLink": {
                     "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/InitiativeDefinition.json",
                     "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
                 }
             }
         }
