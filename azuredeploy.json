@@ -46,7 +46,7 @@
                 "description": "Enforce secure transfer required for your storage accounts"
             }
         },
-        "AssignPolicyToEnforceAzureSqlAuditing": {
+        "AssignPolicyToEnforceAzureSqlAdvancedDataSecurity": {
             "type": "string",
             "allowedValues": [
                 "Yes",
@@ -54,22 +54,16 @@
             ],
             "defaultValue": "Yes",
             "metadata": {
-                "description": "Enable auditing in Azure SQL"
-            }
-        },
-        "resourceGroupName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the new or existing RG to deploy the log analytics and storage account."
+                "description": "This policy enables Advanced Data Security on SQL Servers. This includes turning on Threat Detection and Vulnerability Assessment. It will automatically create a storage account in the same region and resource group as the SQL server to store scan results, with a 'sqlva' prefix."
             }
         },
         "workspaceName": {
             "type": "string",
             "metadata": {
-                "description": "Name for the new or existing log analytics workspace where you want to send ASC and diagnostic logs"
+                "description": "Name for the log analytics workspace where you want to send diagnostic logs"
             }
         },
-        "location": {
+		"location": {
             "type": "string",
             "defaultValue": "westeurope",
             "allowedValues": [
@@ -99,70 +93,15 @@
                 "westus2"
             ],
             "metadata": {
-                "description": "Specifies the location in which to create the workspace."
+                "description": "Location for the template deployment metadata."
             }
-        }
-    },
+        }},
     "variables": {},
     "resources": [
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "[parameters('workspaceName')]",
-            "resourceGroup": "[parameters('resourceGroupName')]",
-            "dependson": [
-                "[subscriptionResourceId('Microsoft.Resources/deployments', parameters('resourceGroupName'))]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/LogAnalyticsWorkspace.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" },
-                    "location": { "value": "[parameters('location')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('AssignPolicyToInstallQualysVAExtension'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "policylogs",
-            "location": "[parameters('location')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployQualys.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('AssignPolicyToEnableDiagnosticLogs'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "policylogs",
-            "location": "[parameters('location')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeployDiagLogs.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": { "value": "[parameters('workspaceName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('AssignPolicyToEnforceHttpsAccess'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "policyAppGwLogs",
+            "name": "policyHttps",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
@@ -173,10 +112,9 @@
             }
         },
         {
-            "condition": "[equals(parameters('AssignPolicyToEnforceSecureAccess'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "policyAppGwLogs",
+            "name": "policySASec",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
@@ -187,53 +125,75 @@
         }
     },
         {
-            "condition": "[equals(parameters('AssignPolicyToEnforceAzureSqlAuditing'),'Yes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "PolicyAzFwLogs",
+            "name": "PolicySQLAudit",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeploySQLAuditing.json",
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyToEnforceAzureSqlSec.json",
                     "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "resourceGroupName": { "value": "[parameters('resourceGroupName')]" }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('AssignPolicyToEnforceAzureSqlAuditing'),'Yes')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
-            "name": "PolicyAzFwLogs",
-            "location": "[parameters('location')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/PolicyDeploySQLAuditing.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "resourceGroupName": { "value": "[parameters('resourceGroupName')]" }
                 }
             }
         },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "name": "[parameters('resourceGroupName')]",
+            "name": "ASCEnforcementInitiativeDef",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments','policyHttps')]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments','PolicySQLAudit')]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments','policySASec')]"
+            ],
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/ResourceGroup.json",
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/InitiativeDefinition.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "resourceGroupName": { "value": "[parameters('resourceGroupName')]" },
-                    "location": { "value": "[parameters('location')]" }
+                    "workspaceName": { "value": "[parameters('workspaceName')]" }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "ASCEnforcementInitiativeAssignment",
+            "dependson": [
+                "[subscriptionResourceId('Microsoft.Resources/deployments','policyHttps')]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments','PolicySQLAudit')]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments','policySASec')]",
+                "[subscriptionResourceId('Microsoft.Resources/deployments','ASCEnforcementInitiativeDef')]"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/joanabmartins/SecurityOptimization/master/Templates/InitiativeAssignment.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "diaglogsEffect": {
+                        "value": "[parameters('AssignPolicyToEnableDiagnosticLogs')]"
+                    },
+                    "qualysVAEffect": {
+                        "value": "[parameters('AssignPolicyToInstallQualysVAExtension')]"
+                    },
+                    "appserviceEffect": {
+                        "value": "[parameters('AssignPolicyToEnforceHttpsAccess')]"
+                    },
+                    "saEffect": {
+                        "value": "[parameters('AssignPolicyToEnforceSecureAccess')]"
+                    },
+                    "sqlEffect": {
+                        "value": "[parameters('AssignPolicyToEnforceAzureSqlAdvancedDataSecurity')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
                 }
             }
         }
