@@ -29,19 +29,26 @@ The current version of the initiative has the following policies:
 | Deploy Diagnostic Settings for Event Hub to Log Analytics workspace | 
 | Deploy Diagnostic Settings for Key Vault to Log Analytics workspace | 
 
+
+ <br/>
+ <br/>
+ 
 After you deploy the templates, if you go to the Policy Assignment Remediation Tasks you may see this issue:
-<br/>
-<p align="left">
-  <img src="./media/PolicyAssignmentError.png">
-</p>
-<br/>
-The *DeployIfNotExists* policy requires a managed identity, and through the ARM template we cannot define the right roles for the managed identity. So, you need to **edit the assignment**, without having to change anything, just to give the right roles for the managed identity to perform the remediation taks.
-<br/>
  <p align="left">
-  <img src="/media/PolicyAssignmentEdit.png">
+  <img src="./media/PolicyAssignmentError.png" >
 </p>
 <br/>
-After that he new resources that you deploy will automatically be remediated by the policies. For the existing resources, you will need to [manually create a remediation task](https://docs.microsoft.com/en-us/azure/governance/policy/how-to/remediate-resources).
+<br/>
+
+The *DeployIfNotExists* policy requires a managed identity, and through the ARM template we cannot define the right roles for the managed identity. So, you need to **edit the assignment**, without having to change anything, just to give the right roles for the managed identity to perform the remediation tasks.
+ <p align="left">
+  <img src="./media/PolicyAssignmentEdit.png">
+</p>
+
+<br/>
+<br/>
+
+After that he new resources that you deploy will automatically be remediated by the policies. For the existing resources, you will need to [manually create a remediation task](https://docs.microsoft.com/en-us/azure/governance/policy/how-to/remediate-resources#create-a-remediation-task-through-portal).
 <br/>
 <br/>
  <br/>
