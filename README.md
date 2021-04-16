@@ -29,10 +29,6 @@ The current version of the initiative has the following policies:
 | Deploy Diagnostic Settings for Event Hub to Log Analytics workspace | 
 | Deploy Diagnostic Settings for Key Vault to Log Analytics workspace | 
 
-
- 
- <br/>
- 
 After you deploy the templates, if you go to the Policy Assignment Remediation Tasks you may see this issue:
 
 <p align="left">
@@ -40,6 +36,7 @@ After you deploy the templates, if you go to the Policy Assignment Remediation T
 </p>
 
 The *DeployIfNotExists* policy requires a managed identity, and through the ARM template we cannot define the right roles for the managed identity. So, you need to **edit the assignment**, without having to change anything, just to give the right roles for the managed identity to perform the remediation taks.
+
  <p align="left">
   <img src="./media/PolicyAssignmentEdit.PNG">
 </p>
