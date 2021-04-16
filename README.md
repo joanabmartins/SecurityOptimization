@@ -1,57 +1,40 @@
 # SecurityOptimization
 
-As your azure environment increases, security optimization should become a crucial and integrated part of day-to-day operations. Securing cloud infrastructure at scale requires deep insight into your optimization potential and changes to your culture to implement sustainable security improvements.
+When you enable Security Center, you get a group os built-in policies assign to your subscription under the Security Center category. The built-in initiative is automatically assigned, regardless of whether you have Azure Defender enabled. This initiative contains only Audit policies. The templates that you find here serve to [enforce those policies](https://docs.microsoft.com/en-us/azure/governance/policy/how-to/remediate-resources#create-a-remediation-task-through-portal), rather then just audit. Through these templates we will create an initiative in your environment with [DeployIfNotExists](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/effects#deployifnotexists) policies that will automatically remmediate some of the recommendations from Azure Security Center.
 
-Here we provide different scripts to help you optimize you security posture on Azure. 
-After clicking the button bellow you can choose what you want to deploy and fill in the parameters. 
-
+<br/>
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjoanabmartins%2FSecurityOptimization%2Fmaster%2Fazuredeploy.json)
 
  <br/>
- 
- * **Enable Security Center Standard** - All Azure subscriptions come with Security Center free enabled, but Security Center Standard helps you find and fix security vulnerabilities, apply access and application controls to block malicious activity, detect threats using analytics and intelligence, and respond quickly when under attack. You can try Security Center Standard at no cost for 30 days when you enable it. You can consult the prices that you pay after it [here](https://azure.microsoft.com/en-us/pricing/details/security-center/).
- By selecting to enable security center standard through our template we will also select the option to [automatically provision Microsoft Monitoring Agents](https://docs.microsoft.com/en-us/azure/security-center/security-center-get-started#enable-automatic-data-collection) to your machines**. 
- If you already have ASC but you want to enable the autoprovisiong of agent, you can go ahead select yes under "Deploy Security Center Standard" and write down the name for the new or existing log analytics workspace that you want the logs to be sent to.
- 
 
- * **Assign policies** - Improving security comes hand in hand with governance. You can remediate the security recommendations as they appear, but as your environment grows, it is probable that you will get that recommendation again. We propose that you solve this through governance, by making sure that some security requirements are automatically applied as you develop your environment. We suggest assigning the following [policies](https://docs.microsoft.com/en-us/azure/governance/policy/overview):
- 
+Instead of manually remmediate the recommendations after the fact, through these *DeployIfNotExists* policies the remmediation will happen automatically, about 15 minutes after the resource gets created or updated.
+
+There is no ‘one size fits all’ approach to security governance. The approach you eventually adopt will vary. So, we give you the option to select which policies you want to assign. When you are deploying the template, you can select *yes* or *no* according to if you want to assign a specific policy, or not.
+
+If you change your mind after the deployment, you just need to edit the initiative assignment and change the paramenter of that policy.
+
+The current version of the initiative has the following policies: 
 | Policy |
 | ------ |
+| Configure machines to receive the Qualys vulnerability assessment agent |
+| Enforce https access for App Services |
+| Enforce secure transfer to storage account |
 | Enable diagnostic logs collection from logic apps, service bus, event hub, activity logs and key vault | 
 | Install Integrated vulnerability assessment solution (powered by Qualys) | 
 | Enforce https access in web apps, api apps and storage accounts | 
-| Enable auditing in Azure SQL | 
-| Install Endpoint Protection | 
-
- 
- * **Deploy workbook to help you follow and analyze your security center recommendations, alerts and trends** - We developed this workbook to make it easier for you to check Security Center, Sentinel and dashboards related to some of the diagnostic logs that you have enabled in one place.
-
- <p align="center">
-  <img src="./media/workbook.PNG" width="500" alt="">
-</p>
-
-  * **Enable Sentinel** - Microsoft [Azure Sentinel](https://docs.microsoft.com/en-us/azure/sentinel/overview) is a scalable, cloud-native, security information event management (SIEM) and security orchestration automated response (SOAR) solution. By selecting **Yes** to the deployment of Sentinel we will enable Sentinel on the log analytics template and deploy a logic app that you can use in the future to receive alerts from Sentinel. 
- 
- 
- * **What needs to be configured manually** 
-
-->[Common Windows security logs collection in Azure Security Center](https://docs.microsoft.com/en-us/azure/security-center/security-center-enable-data-collection#data-collection-tier)
-
-->[Continuous export of ASC recommendation and alerts](https://docs.microsoft.com/en-us/azure/security-center/continuous-export)
-
-->[Create a run as account in automation account](https://docs.microsoft.com/en-us/azure/automation/manage-runas-account#create-a-run-as-account-in-azure-portal)
-
-->[Connect data soureces to Azure Sentinel](https://docs.microsoft.com/en-us/azure/sentinel/quickstart-onboard#connect-data-sources)
+| Deploy Advanced Data Security on SQL servers | 
+| Deploy Diagnostic Settings for Logic Apps to Log Analytics workspace | 
+| Deploy Diagnostic Settings for Service Bus to Log Analytics workspace | 
+| Deploy Diagnostic Settings for Event Hub to Log Analytics workspace | 
+| Deploy Diagnostic Settings for Key Vault to Log Analytics workspace | 
 
 
  
  <br/>
- <br/>
- <br/>
- <br/>
- <br/>
  
- 
+Once you assign the policies, the new resources that you deploy will automatically be remediated by them. For the existing resources, you will need to [manually create a remediation task](https://docs.microsoft.com/en-us/azure/governance/policy/how-to/remediate-resources#create-a-remediation-task-through-portal).
+<br/>
+ <br/>
+ <br/>
 >  FastTrack for Azure are “Professional Services” subject to the “Professional Services Terms” in the Online Services Terms and Online Services Data Protection Addendum. This document is provided “AS-IS,” WITHOUT WARRANTY OF ANY KIND. Microsoft disclaims all express, implied or statutory warranties, including warranties of quality, title, non-infringement, merchantability and fitness for a particular purpose. 
