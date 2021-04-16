@@ -40,7 +40,7 @@
         }
     },
     "variables": {
-        "policySetAssignmentName": "enforce-security-center-recommendations-assignment",
+        "policySetAssignmentName": "Enforce Security Center Recommendations",
         "policySetName": "enforce-security-center-recommendations"
     },
     "resources": [
